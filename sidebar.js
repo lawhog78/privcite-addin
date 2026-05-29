@@ -53,6 +53,14 @@ function initializeUI() {
       hoverDelayInput.disabled = true;
     }
   });
+  
+  // Live filter spacing issues on dropdown change
+  const spacingPreference = document.getElementById("spacingPreference");
+  if (spacingPreference) {
+    spacingPreference.addEventListener("change", () => {
+      renderIssues(activeIssues);
+    });
+  }
 
   // Handle hover delay slider input change
   hoverDelayInput.addEventListener("input", () => {
@@ -266,17 +274,24 @@ function renderIssues(issues) {
   const container = document.getElementById("issueContainer");
   const badge = document.getElementById("issueBadge");
   const btnAutoFormat = document.getElementById("btnAutoFormat");
+  const spacingPreference = document.getElementById("spacingPreference");
+  const skipSpacing = spacingPreference ? (spacingPreference.value === "disabled") : false;
+  
+  // Dynamically filter out spacing issues if spacing is disabled
+  const filteredIssues = skipSpacing ? issues.filter(i => i.category.toLowerCase() !== "spacing") : issues;
   
   container.innerHTML = "";
-  badge.textContent = `${issues.length} Issues`;
+  badge.textContent = `${filteredIssues.length} Issues`;
   
-  if (issues.length === 0) {
+  if (filteredIssues.length === 0) {
     if (btnAutoFormat) btnAutoFormat.style.display = "none";
     container.innerHTML = `
       <div id="emptyState" style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; border: 1px dashed var(--border-light); border-radius: 8px; animation: slideInUp 0.3s ease;">
         🎉 No citation formatting issues found! Your open brief is structurally flawless.
       </div>
     `;
+    const symmetrizerContainer = document.getElementById("spacingSymmetrizerContainer");
+    if (symmetrizerContainer) symmetrizerContainer.innerHTML = "";
     return;
   }
   
@@ -284,7 +299,7 @@ function renderIssues(issues) {
   const isPedagogical = document.getElementById("pedagogicalToggle").checked;
   const actionLabel = isPedagogical ? "Inject Word Comment" : "Apply Redline Edit";
   
-  const spacingIssues = issues.filter(i => i.category.toLowerCase() === "spacing");
+  const spacingIssues = filteredIssues.filter(i => i.category.toLowerCase() === "spacing");
   if (btnAutoFormat) {
     if (spacingIssues.length > 0 && !isPedagogical) {
       btnAutoFormat.style.display = "inline-block";
@@ -293,7 +308,7 @@ function renderIssues(issues) {
     }
   }
   
-  issues.forEach((issue) => {
+  filteredIssues.forEach((issue) => {
     const card = document.createElement("div");
     card.id = `card-${issue.id}`;
     card.className = `issue-card ${issue.severity}`;
