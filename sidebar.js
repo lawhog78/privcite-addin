@@ -16,6 +16,8 @@ Office.onReady((info) => {
 
 // Cache for active issues scanned from the document
 let activeIssues = [];
+let isNavigating = false;
+let hoverTimeout = null;
 
 function initializeUI() {
   const btnCheck = document.getElementById("btnCheckDocument");
@@ -289,6 +291,7 @@ function renderIssues(issues) {
   
   issues.forEach((issue) => {
     const card = document.createElement("div");
+    card.id = `card-${issue.id}`;
     card.className = `issue-card ${issue.severity}`;
     
     card.innerHTML = `
@@ -452,6 +455,8 @@ function escapeHtml(text) {
 }
 
 window.highlightIssueInWord = function(id) {
+  if (isNavigating) return; // Prevent hover selections from interrupting active click navigation
+
   const hoverSelectionToggle = document.getElementById("hoverSelectionToggle");
   if (hoverSelectionToggle && !hoverSelectionToggle.checked) {
     return; // Hover auto-selection is turned OFF (Diana / Slower User stability focus)
@@ -494,6 +499,24 @@ window.highlightIssueInWord = function(id) {
 };
 
 window.selectIssueInWord = async function(id) {
+  isNavigating = true;
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout);
+  }
+  
+  // Visual selection highlighting in the sidebar
+  document.querySelectorAll(".issue-card").forEach(c => c.classList.remove("selected"));
+  const activeCard = document.getElementById(`card-${id}`);
+  if (activeCard) {
+    activeCard.classList.add("selected");
+    activeCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // Resume hover selections after an 800ms navigation lock
+  setTimeout(() => {
+    isNavigating = false;
+  }, 800);
+
   const issue = activeIssues.find(i => i.id === id);
   if (!issue) return;
   

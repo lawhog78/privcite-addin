@@ -338,6 +338,13 @@ input:checked + .slider:before {
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+.issue-card.selected {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--color-success) !important;
+  box-shadow: 0 0 12px rgba(100, 255, 100, 0.15);
+  transform: translateX(4px);
+}
+
 .issue-meta {
   display: flex;
   justify-content: space-between;
