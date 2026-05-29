@@ -312,11 +312,18 @@ function renderIssues(issues) {
       highlightIssueInWord(issue.id);
     });
     
+    // On-click automatic selection and scroll-into-view
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".btn-action")) {
+        return; // Skip if they clicked "Explain Rule" or "Apply Redline Edit"
+      }
+      selectIssueInWord(issue.id);
+    });
+    
     container.appendChild(card);
   });
 
-  // Dynamic Spacing Symmetrizer Command Center
-  const spacingIssues = issues.filter(i => i.category.toLowerCase() === "spacing");
+  // Dynamic Spacing Symmetrizer Command Center (reuses spacingIssues filtered above)
   const symmetrizerContainer = document.getElementById("spacingSymmetrizerContainer");
   
   if (spacingIssues.length > 0 && !isPedagogical) {
@@ -484,6 +491,35 @@ window.highlightIssueInWord = function(id) {
       console.error("Selecting text in Word failed: ", error);
     }
   }, delay);
+};
+
+window.selectIssueInWord = async function(id) {
+  const issue = activeIssues.find(i => i.id === id);
+  if (!issue) return;
+  
+  const targetTextStr = issue.targetText || issue.message;
+  if (typeof Word === 'undefined') {
+    console.log(`Standalone Browser Click selection targeting: "${targetTextStr}"`);
+    return;
+  }
+  
+  try {
+    await Word.run(async (context) => {
+      const body = context.document.body;
+      const searchResults = body.search(targetTextStr, { matchCase: true, matchWholeWord: false });
+      searchResults.load("items");
+      await context.sync();
+      
+      if (searchResults.items.length > 0) {
+        const range = searchResults.items[0];
+        range.select();
+        range.scrollIntoView("Inside");
+        await context.sync();
+      }
+    });
+  } catch (error) {
+    console.error("Selecting and scrolling text in Word failed: ", error);
+  }
 };
 
 /**
