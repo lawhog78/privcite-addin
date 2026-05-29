@@ -196,6 +196,9 @@ function parseTextDynamically(text) {
     return issues;
   }
 
+  const spacingPref = document.getElementById("spacingPreference").value;
+  const skipSpacing = (spacingPref === "disabled");
+
   // Heuristic 1: Landmark Case Spelling Typo (Map v. Ohio -> Mapp v. Ohio)
   const mappRegex = /\bMap\s+v\.\s+Ohio\b/gi;
   let match;
@@ -211,47 +214,48 @@ function parseTextDynamically(text) {
     });
   }
 
-  // Heuristic 2: Spacing inside open abbreviations (e.g., F.Supp.2d, F. Supp.2d -> F. Supp. 2d)
-  const openRegex = /\b(\d+)\s+([Ff]\.[Ss]upp\.[2dDd]+|[Ff]\.\s+[Ss]upp\.[2dDd]+|[Ff]\.[Ss]upp\.\s+[2dDd]+)\s+(\d+)\b/g;
-  while ((match = openRegex.exec(text)) !== null) {
-    const rawMatch = match[0];
-    const vol = match[1];
-    const reporter = match[2];
-    const page = match[3];
-    
-    if (reporter !== "F. Supp. 2d" && reporter !== "f. supp. 2d") {
+  if (!skipSpacing) {
+    // Heuristic 2: Spacing inside open abbreviations (e.g., F.Supp.2d, F. Supp.2d -> F. Supp. 2d)
+    const openRegex = /\b(\d+)\s+([Ff]\.[Ss]upp\.[2dDd]+|[Ff]\.\s+[Ss]upp\.[2dDd]+|[Ff]\.[Ss]upp\.\s+[2dDd]+)\s+(\d+)\b/g;
+    while ((match = openRegex.exec(text)) !== null) {
+      const rawMatch = match[0];
+      const vol = match[1];
+      const reporter = match[2];
+      const page = match[3];
+      
+      if (reporter !== "F. Supp. 2d" && reporter !== "f. supp. 2d") {
+        issues.push({
+          id: id++,
+          category: "Spacing",
+          severity: "error",
+          targetText: rawMatch,
+          suggestion: `${vol} F. Supp. 2d ${page}`,
+          message: "Irregular spacing inside reporter. Multi-letter abbreviations require surrounding spaces.",
+          rule: "Bluebook Rule 6.1: Closed abbreviations apply only to adjacent single capital letters. Multi-letter abbreviations (like 'Supp.', 'App.', 'Decl.') must have open spaces."
+        });
+      }
+    }
+
+    // Heuristic 3: Spacing inside closed abbreviations (e.g. F. 3d, U. S. -> F.3d, U.S.)
+    const closedRegex = /\b(\d+)\s+(F\.\s+3d|F\.\s+2d|U\.\s+S\.|S\.\s+Ct\.)\s+(\d+)\b/g;
+    while ((match = closedRegex.exec(text)) !== null) {
+      const rawMatch = match[0];
+      const vol = match[1];
+      const abbrev = match[2];
+      const page = match[3];
+      
+      const correctedAbbrev = abbrev.replace(/\s+/g, ""); // close up spaces
       issues.push({
         id: id++,
         category: "Spacing",
         severity: "error",
         targetText: rawMatch,
-        suggestion: `${vol} F. Supp. 2d ${page}`,
-        message: "Irregular spacing inside reporter. Multi-letter abbreviations require surrounding spaces.",
-        rule: "Bluebook Rule 6.1: Closed abbreviations apply only to adjacent single capital letters. Multi-letter abbreviations (like 'Supp.', 'App.', 'Decl.') must have open spaces."
+        suggestion: `${vol} ${correctedAbbrev} ${page}`,
+        message: "Irregular spacing inside reporter. Adjacent single-letter abbreviations must be closed up.",
+        rule: "Bluebook Rule 6.1: Closed abbreviations apply to adjacent single capital letters (e.g., F.3d, U.S., S.Ct., N.Y.) with no internal spaces."
       });
     }
   }
-
-  // Heuristic 3: Spacing inside closed abbreviations (e.g. F. 3d, U. S. -> F.3d, U.S.)
-  const closedRegex = /\b(\d+)\s+(F\.\s+3d|F\.\s+2d|U\.\s+S\.|S\.\s+Ct\.)\s+(\d+)\b/g;
-  while ((match = closedRegex.exec(text)) !== null) {
-    const rawMatch = match[0];
-    const vol = match[1];
-    const abbrev = match[2];
-    const page = match[3];
-    
-    const correctedAbbrev = abbrev.replace(/\s+/g, ""); // close up spaces
-    issues.push({
-      id: id++,
-      category: "Spacing",
-      severity: "error",
-      targetText: rawMatch,
-      suggestion: `${vol} ${correctedAbbrev} ${page}`,
-      message: "Irregular spacing inside reporter. Adjacent single-letter abbreviations must be closed up.",
-      rule: "Bluebook Rule 6.1: Closed abbreviations apply to adjacent single capital letters (e.g., F.3d, U.S., S.Ct., N.Y.) with no internal spaces."
-    });
-  }
-
   return issues;
 }
 
