@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy — PrivCite</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            line-height: 1.6; 
-            max-width: 720px; 
-            margin: 40px auto; 
-            padding: 0 20px; 
-            color: #222; 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 0 20px;
+            color: #222;
         }
         h1, h2 { color: #111; }
         .date { color: #666; font-size: 0.9em; }
@@ -19,39 +19,45 @@
         li { margin-bottom: 8px; }
         a { color: #0076FF; text-decoration: none; }
         a:hover { text-decoration: underline; }
+        code { background: #f4f4f4; padding: 0 4px; border-radius: 3px; }
     </style>
 </head>
 <body>
     <h1>Privacy Policy for PrivCite</h1>
     <p class="date"><strong>Effective Date:</strong> May 28, 2026<br>
-    <strong>Last Updated:</strong> May 28, 2026</p>
+    <strong>Last Updated:</strong> September 9, 2026</p>
 
-    <p>PrivCite is a local-only macOS application designed to help law students, law clerks, summer associates, and attorneys review legal documents for Bluebook citation compliance and writing style issues.</p>
+    <p>PrivCite is a local-first macOS application designed to help law students, law clerks, summer associates, and attorneys review legal documents for Bluebook citation compliance and writing style issues.</p>
 
     <h2>Data Collection and Use</h2>
-    <p>PrivCite collects <strong>no personal data or document content whatsoever</strong>.</p>
+    <p>PrivCite itself collects <strong>no personal data or document content</strong>.</p>
     <ul>
-        <li>All document analysis, issue detection, redlining, and export operations occur entirely on your device using only local Apple frameworks and pure Swift code.</li>
-        <li>Your documents, memos, briefs, and any generated review or fixed copies <strong>never leave your Mac</strong>.</li>
-        <li>The app makes <strong>zero outbound network connections</strong> during normal operation.</li>
-        <li>There are no accounts, no telemetry, no analytics, no crash reporting, and no third-party tracking or advertising.</li>
-        <li>(If any optional future local-only LLM features are added, they would communicate exclusively with software you choose to run on your own machine, such as Ollama on localhost.)</li>
+        <li>All document analysis, issue detection, redlining, and export operations occur on your device using Apple frameworks and Swift code.</li>
+        <li>Your documents, memos, briefs, and any generated review or fixed copies <strong>never leave your Mac</strong> and are never sent to Andrew Wesley Dodson or any PrivCite server. PrivCite has no backend.</li>
+        <li>There are no PrivCite accounts, no telemetry, no analytics, no crash reporting, and no advertising.</li>
+        <li>The app does not require a network connection to analyze documents or export Word files.</li>
     </ul>
 
+    <h2>Optional CourtListener Lookup</h2>
+    <p>By default, PrivCite makes <strong>no outbound network connections</strong>.</p>
+    <p>If you choose to paste a CourtListener API token in Preferences, PrivCite may send <strong>only standalone public citation coordinates</strong> (for example, <code>372 U.S. 335</code>) to CourtListener so it can verify the case name. It does <strong>not</strong> send your document, party names from the brief, client information, or any other work-product text.</p>
+    <p>This lookup is optional, off by default, and can be left blank. CourtListener’s own privacy policy applies to data you send to that service.</p>
+
     <h2>Your Rights</h2>
-    <p>Because PrivCite never receives or stores any of your information, there is nothing for us to access, delete, or correct on our end. You retain complete control over your work at all times.</p>
+    <p>Because PrivCite never receives or stores your documents, there is nothing for us to access, delete, or correct on our end. You retain complete control over your work at all times.</p>
 
     <h2>Third-Party Services</h2>
-    <p>PrivCite contains no third-party analytics, advertising, data-sharing, or cloud components.</p>
+    <p>PrivCite contains no third-party analytics, advertising, or data-sharing SDKs. The only optional third-party contact is CourtListener, and only if you supply your own API token.</p>
 
     <h2>Changes to This Policy</h2>
-    <p>We will update this policy only if the app's fundamental behavior changes. The effective date will be revised accordingly. Past analyses performed on your machine are unaffected.</p>
+    <p>We will update this policy if the app’s behavior changes. The last-updated date will be revised accordingly. Past analyses performed on your machine are unaffected.</p>
 
     <h2>Contact</h2>
     <p>Questions about this policy or the application?<br>
     Email: <a href="mailto:lcadrewdodson@gmail.com">lcadrewdodson@gmail.com</a><br>
-    Support / Issues: <a href="https://github.com/lawhog78/privcite-addin/issues">GitHub Issues Page</a></p>
+    Support: <a href="https://lawhog78.github.io/privcite-addin/">https://lawhog78.github.io/privcite-addin/</a><br>
+    Issues: <a href="https://github.com/lawhog78/privcite-addin/issues">GitHub Issues</a></p>
 
-    <p>This policy is deliberately concise because PrivCite is deliberately private by design. Your privileged legal work and confidential documents stay under your control on your device.</p>
+    <p>This policy is deliberately concise because PrivCite is deliberately private by design. Your privileged legal work stays under your control on your device.</p>
 </body>
 </html>
